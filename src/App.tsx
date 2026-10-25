@@ -4,17 +4,17 @@
 import { products } from "./data/products";
 import type { Product } from "./types/product";
 
-import ProductCard from "./components/ProductCard";
+import ProductGrid from "./components/ProductGrid";
 
 function App() {
-    const singleProduct = products[0];
 
+    
     return (
         <>
             <main className="min-h-screen bg-gray-50 p-8">
                 <h1 className="text-3xl font-bold">SummitGear Market</h1>
                 <p className="text-gray-600">Open the tickets folder to get started.</p>
-            <ProductCard {...singleProduct} />
+                <ProductGrid products={products} />
             </main>
         </>
     );
