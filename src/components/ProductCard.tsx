@@ -1,6 +1,9 @@
 import type { Product } from "../types/product";
 
-type ProductCardProps = { product: Product };
+type ProductCardProps = { 
+    product: Product;
+    
+};
 
 export default function ProductCard({ product }: ProductCardProps) {
   return (
