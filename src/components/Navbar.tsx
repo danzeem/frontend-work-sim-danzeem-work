@@ -1,34 +1,44 @@
-import React from 'react';
+import type { Theme } from "../App";
 
-export default function Navbar() {
+type NavbarProps = {
+  theme: Theme;
+  onThemeChange: (theme: Theme) => void;
+};
+
+export default function Navbar({ theme, onThemeChange }: NavbarProps) {
+  function toggleTheme() {
+    onThemeChange(theme === "dark" ? "light" : "dark");
+  }
+
   return (
-    <nav className="w-full flex items-center justify-between bg-white w-full px-8 py-4 border-b border-gray-100 font-sans">
-      <div className="flex items-center gap-2.5">
-        <div className="flex items-center justify-center w-8 h-8 rounded-md bg-[#0b5334] text-white text-xs">
-          ▲
+    <header className="border-b border-[#e1e8f0] bg-white transition-colors dark:border-slate-700 dark:bg-slate-900">
+      <nav
+        className="flex min-h-[66px] w-full items-center justify-between gap-4 px-5 py-4 sm:px-9"
+        aria-label="Main navigation"
+      >
+        <a href="#shop" className="flex min-w-0 items-center gap-2.5">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#075c49] text-[11px] text-white dark:bg-emerald-600" aria-hidden="true">
+            ▲
+          </span>
+          <span className="truncate text-base font-extrabold tracking-tight text-[#075c49] dark:text-emerald-300 sm:text-xl">
+            SummitGear Market
+          </span>
+        </a>
+        <div className="flex shrink-0 items-center gap-3 text-sm text-[#263b59] dark:text-slate-200 sm:gap-8">
+          <a className="hover:text-[#075c49] dark:hover:text-emerald-300" href="#shop">Shop</a>
+          <a className="hover:text-[#075c49] dark:hover:text-emerald-300" href="#favorites">Favorites</a>
+          <a className="hover:text-[#075c49] dark:hover:text-emerald-300" href="#cart">Cart</a>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            aria-pressed={theme === "dark"}
+            className="rounded-lg p-2 text-lg transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 dark:hover:bg-slate-700"
+          >
+            {theme === "dark" ? "☀️" : "🌙"}
+          </button>
         </div>
-        <span className="text-[#0b5334] font-bold text-lg tracking-tight">
-          SummitGear Market
-        </span>
-      </div>
-
-      <ul className="flex items-center gap-6 list-none m-0 p-0">
-        <li>
-          <a href="#shop" className="text-gray-600 font-medium text-sm hover:text-[#0b5334] transition-colors duration-200">
-            Shop
-          </a>
-        </li>
-        <li>
-          <a href="#favorites" className="text-gray-600 font-medium text-sm hover:text-[#0b5334] transition-colors duration-200">
-            Favorites
-          </a>
-        </li>
-        <li>
-          <a href="#cart" className="text-gray-600 font-medium text-sm hover:text-[#0b5334] transition-colors duration-200">
-            Cart
-          </a>
-        </li>
-      </ul>
-    </nav>
+      </nav>
+    </header>
   );
 }

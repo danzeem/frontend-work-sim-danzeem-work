@@ -1,13 +1,21 @@
-export default function EmptyState({ title }: { title: string }) {
-    return (
-        < >
-            <h2 className="text-2xl pt-1 pb-2 pl-2 font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl tracking-tight">
-                {title}
-            </h2>
-            <div className="rounded-xl border-2 h-[10rem] m-3 bg-white border-dashed border-gray-500 p-4 flex flex-col justify-center items-center">
-                <h4 >No Products Here</h4>
-                <p className="text-gray-400">Nothing To Match This Section. Check Back Soon!</p>
-            </div>
-        </>
-    )
+type EmptyStateProps = {
+  title: string;
+  query?: string;
+};
+
+export default function EmptyState({ title, query }: EmptyStateProps) {
+  return (
+    <section
+      className="flex min-h-[178px] w-full flex-col items-center justify-center rounded-[14px] border-2 border-dashed border-[#cfdbeb] bg-white px-5 py-8 text-center transition-colors dark:border-slate-600 dark:bg-slate-900"
+      aria-live="polite"
+    >
+      <span className="mb-2 text-[33px] leading-none" aria-hidden="true">🔍</span>
+      <h2 className="text-base font-bold text-[#17243b] dark:text-slate-100">{title}</h2>
+      <p className="mt-1 text-sm text-[#627895] dark:text-slate-400">
+        {query?.trim()
+          ? <>Nothing matches “{query}”. Try a different search.</>
+          : "Nothing to match this section. Check back soon!"}
+      </p>
+    </section>
+  );
 }

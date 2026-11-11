@@ -1,65 +1,39 @@
 import type { Product } from "../types/product";
 
-export default function StatsBar({ products }: { products: Product[] }) {
-    const stockSum = products.reduce((accumulator, currentProduct) => {
-        return accumulator + currentProduct.stock;
-    }, 0); // 0 is the initialValue
-    const priceSum = products.reduce((accumulator, currentProduct) => {
-        return accumulator + currentProduct.stock * currentProduct.price;
-    }, 0); // 0 is the initialValue
+type StatsBarProps = { products: Product[] };
 
-    const ratingAverage = products.reduce((accumulator, currentProduct) => {
-        return accumulator + currentProduct.rating;
-    }, 0) / products.length; // 0 is the initialValue
-    const lowStockSum = products.reduce((accumulator, currentProduct) => {
-        let count = 0
-        if (currentProduct.stock > 10) {
-            count = 1
-        }
-        return accumulator + count;
-    }, 0); // 0 is the initialValue
+export default function StatsBar({ products }: StatsBarProps) {
+  const stockSum = products.reduce((sum, product) => sum + product.stock, 0);
+  const priceSum = products.reduce((sum, product) => sum + product.stock * product.price, 0);
+  const ratingAverage = products.length
+    ? products.reduce((sum, product) => sum + product.rating, 0) / products.length
+    : 0;
+  const lowStockSum = products.reduce((sum, product) => sum + (product.stock < 10 ? 1 : 0), 0);
 
-    return (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 my-6">
-            {/* Card 1: Units In Stock */}
-            <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                    Units in Stock
-                </p>
-                <p className="text-2xl font-bold text-slate-900 mt-2">
-                    {stockSum.toLocaleString()}
-                </p>
-            </div>
+  const cardClass = "rounded-xl border border-slate-100 bg-white p-6 shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-900";
+  const labelClass = "text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400";
+  const valueClass = "mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100";
 
-            {/* Card 2: Inventory Value */}
-            <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                    Inventory Value
-                </p>
-                <p className="text-2xl font-bold text-slate-900 mt-2">
-                    ${priceSum.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </p>
-            </div>
-
-            {/* Card 3: Average Rating */}
-            <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                    Average Rating
-                </p>
-                <p className="text-2xl font-bold text-slate-900 mt-2 flex items-center gap-1">
-                    <span>★</span> {ratingAverage.toFixed(1)}
-                </p>
-            </div>
-
-            {/* Card 4: Low Stock */}
-            <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                    Low Stock
-                </p>
-                <p className="text-2xl font-bold text-orange-700 mt-2">
-                    {lowStockSum} {lowStockSum === 1 ? 'product' : 'products'}
-                </p>
-            </div>
-        </div>
-    )
+  return (
+    <div className="my-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className={cardClass}>
+        <p className={labelClass}>Units in Stock</p>
+        <p className={valueClass}>{stockSum.toLocaleString()}</p>
+      </div>
+      <div className={cardClass}>
+        <p className={labelClass}>Inventory Value</p>
+        <p className={valueClass}>${priceSum.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+      </div>
+      <div className={cardClass}>
+        <p className={labelClass}>Average Rating</p>
+        <p className={valueClass}>★ {ratingAverage.toFixed(1)}</p>
+      </div>
+      <div className={cardClass}>
+        <p className={labelClass}>Low Stock</p>
+        <p className="mt-2 text-2xl font-bold text-orange-700 dark:text-orange-300">
+          {lowStockSum} {lowStockSum === 1 ? "product" : "products"}
+        </p>
+      </div>
+    </div>
+  );
 }
