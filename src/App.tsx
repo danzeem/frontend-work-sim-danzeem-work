@@ -3,22 +3,25 @@
 
 import { products } from "./data/products";
 import ProductSection from "./components/ProductSection";
-import EmptyState from "./components/EmptyState";
+import StatsBar from "./components/StatsBar";
 import Navbar from "./components/Navbar";
-import Footer  from "./components/Footer";
+import Footer from "./components/Footer";
+import groupByCategory from "./utils/groupByCategory";
 function App() {
-    const dealsUnder20 = products.filter((p) => p.price < 20);
-    const topRated = products.filter((p) => p.stock >= 10 && p.rating >= 4.5);
-    const furniture= products.filter((p) => p.category = "furniture");
-    const luxuryOver5000 = products.filter((p) => p.category === "luxury" && p.price > 5000);
+    const group = groupByCategory(products);
+    const byCategory = Object.entries(group).map(([category, products]) =>
+    (<ProductSection
+        key={category}
+        title={`${category} (${products.length})`}
+        products={products}
+    />
+    ));
     return (
         <>
             <main className="min-h-screen bg-gray-50 ">
                 <Navbar />
-                <ProductSection title = "Deals Under $20" products={dealsUnder20} />
-                <ProductSection title = "Top Rated" products={topRated} />
-                <ProductSection title = "Furniture" products={furniture} />
-                <ProductSection title = "Luxury (over $5,000)" products={luxuryOver5000} />
+                <StatsBar products={products} />
+                {byCategory}
                 <Footer />
             </main>
         </>
