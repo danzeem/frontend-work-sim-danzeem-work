@@ -3,12 +3,17 @@ import type { Product } from "../types/product";
 type ProductCardProps = {
     product: Product;
     isFavorite: boolean;
+    isMaxInCart: boolean;
     onToggleFavorite: (productID: number) => void;
+    handleAddToCart: (productID: number) => void;
 };
 
-export default function ProductCard({ product, isFavorite, onToggleFavorite }: ProductCardProps) {
+export default function ProductCard({ product, isFavorite, isMaxInCart, handleAddToCart, onToggleFavorite }: ProductCardProps) {
     function handleToggle() {
         onToggleFavorite(product.id);
+    }
+    function handleCart(){
+        handleAddToCart(product.id);
     }
     return (
         <article className="flex h-full flex-col overflow-hidden rounded-[15px] border border-[#e0e7f0] bg-white shadow-[0_2px_3px_rgba(15,23,42,0.06)] transition-colors dark:border-slate-700 dark:bg-slate-900 dark:shadow-[0_2px_12px_rgba(0,0,0,0.22)]">
@@ -19,10 +24,13 @@ export default function ProductCard({ product, isFavorite, onToggleFavorite }: P
                     </span>
                 )}
                 <button
-                    type="button"
-                    className="absolute top-3 right-3 text-xl text-yellow-500"
-                    aria-label="Toggle favorite"
-                    onClick={handleToggle}>
+                    onClick={handleToggle}
+                    aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+                    className={`flex h-9 w-9 items-center justify-center rounded-full border text-base leading-none transition-all ${isFavorite
+                        ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-400"
+                        : "border-slate-200 bg-white text-slate-300 hover:border-slate-300 hover:text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500 dark:hover:border-slate-600 dark:hover:text-slate-400"
+                        }`}
+                >
                     {isFavorite ? "♥" : "♡"}
                 </button>
                 <img className="h-full w-full object-contain" src={product.thumbnail} alt={product.title} loading="lazy" />
@@ -39,6 +47,23 @@ export default function ProductCard({ product, isFavorite, onToggleFavorite }: P
                         ★ {product.rating}
                     </span>
                 </div>
+                <button
+                    type="button"
+                    disabled={isMaxInCart}
+                    onClick={handleCart}
+                    className={`
+                          w-full rounded-xl px-4 py-3 mt-5
+                          text-sm font-semibold
+                          transition-colors
+                          bg-emerald-800 text-white
+                          hover:bg-emerald-900
+                          disabled:bg-slate-200
+                          disabled:text-slate-400
+                          disabled:cursor-not-allowed
+                          disabled:opacity-100
+                        `}>
+                    {isMaxInCart ? "Max in cart" : "Add to cart"}
+                </button>
             </div>
         </article>
     );
