@@ -21,7 +21,7 @@ export default function ProductSection({ favourites, onToggleFavorite, title, pr
             <h2 className="mb-4 text-xl font-bold text-[#17243b] dark:text-slate-100 sm:text-2xl">
                 {prettyTitle}
             </h2>
-            <ProductGrid  carts = {carts} handleAddToCart = {handleAddToCart} favourites={favourites}  onToggleFavorite={onToggleFavorite} products={products} />
+            <ProductGrid  carts = {carts} handleAddToCart = {handleAddToCart} favourites={favourites}  onToggleFavorite={onToggleFavorite}  products={products} />
         </section>
     );
 }

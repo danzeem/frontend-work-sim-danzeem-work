@@ -6,12 +6,20 @@ type NavbarProps = {
     favourites: number[];
     carts: CartItem[];
     onThemeChange: (theme: Theme) => void;
+    isClose: boolean;
+    onClose: (isClose: boolean) => void;
+
+
 };
 
-export default function Navbar({ favourites, theme, onThemeChange, carts }: NavbarProps) {
+export default function Navbar({ favourites, theme, onThemeChange, carts, onClose, isClose, }: NavbarProps) {
     function toggleTheme() {
         onThemeChange(theme === "dark" ? "light" : "dark");
     }
+        function toClose(){
+        onClose(isClose ? false : true);
+    }
+
     const currentTotalCart = carts.reduce((acc, curr) => acc + curr.quantity, 0);
     return (
         <header className="border-b border-[#e1e8f0] bg-white transition-colors dark:border-slate-700 dark:bg-slate-900">
@@ -31,17 +39,20 @@ export default function Navbar({ favourites, theme, onThemeChange, carts }: Navb
                     <a className="hover:text-[#075c49] dark:hover:text-emerald-300" href="#shop">Shop</a>
                     <a className="hover:text-[#075c49] dark:hover:text-emerald-300" href="#favorites">Favorites
                         {favourites.length > 0 && (
-                            <span className="inline-flex items-center justify-center rounded-full bg-emerald-900 px-2.5 py-0.5 text-xs font-bold text-white dark:bg-emerald-300 dark:text-slate-900">
+                            <span className="inline-flex items-center justify-center rounded-full bg-emerald-900 mx-2 px-2.5 py-0.5 text-xs font-bold text-white dark:bg-emerald-300 dark:text-slate-900">
                                 {favourites.length}
                             </span>)}
                     </a>
-                    <a className="hover:text-[#075c49] dark:hover:text-emerald-300" href="#cart">Cart
+                    <button
+                        type="button"
+                        onClick={toClose}
+                        className="hover:text-[#075c49] dark:hover:text-emerald-300 cursor-pointer">Cart
                         {currentTotalCart > 0 && (
-                            <span className="inline-flex items-center justify-center rounded-full bg-emerald-900 px-2.5 py-0.5 text-xs font-bold text-white dark:bg-emerald-300 dark:text-slate-900">
+                            <span className="inline-flex items-center justify-center rounded-full bg-emerald-900 mx-2 px-2.5 py-0.5 text-xs font-bold text-white dark:bg-emerald-300 dark:text-slate-900">
                                 {currentTotalCart}
                             </span>)}
 
-                    </a>
+                    </button>
                     <button
                         type="button"
                         onClick={toggleTheme}
