@@ -7,18 +7,20 @@ type CartPanelProps = {
     onClose: (isClose: boolean) => void;
     carts: CartItem[];
     handleAddToCart: (productID: number) => void;
+        removeOneFromCart: (productID: number) => void;
+    removeCompletelyFromCart: (productID: number) => void;
+
 
 }
-export default function CartPanel({ itemCount = 8, onClose, isClose,carts, handleAddToCart}: CartPanelProps) {
-    function toClose(){
+export default function CartPanel({ itemCount, onClose, isClose, carts, handleAddToCart,removeCompletelyFromCart, removeOneFromCart }: CartPanelProps) {
+    function toClose() {
         onClose(isClose ? false : true);
     }
 
     return (
         <>
-            <div className="fixed inset-0 bg-black/40">
-            </div>
-            <div className="fixed bg-white flex flex-col right-0 top-0 h-full w-96 z-50"  >
+            <div className="fixed inset-0 z-40 bg-black/40" />
+            <div className="fixed bg-white flex flex-col right-0 top-0 h-full w-96 z-50">
                 <div className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
                     <h2 className="text-lg font-bold tracking-tight text-slate-900">
                         Your cart ({itemCount})
@@ -44,8 +46,21 @@ export default function CartPanel({ itemCount = 8, onClose, isClose,carts, handl
                         </svg>
                     </button>
                 </div>
-                <div className="flex-1 overflow-y-auto ">
-                    {carts.map((cart) => (<CurrentCartItem handleAddToCart={handleAddToCart} carts= {carts} product={cart.product}  quantity={cart.quantity} />)
+                <div className="flex-1 overflow-y-auto">
+                    {itemCount === 0 ? (
+                        <EmptyCart />
+                    ) : (
+                        carts.map((cart) => (
+                            <CurrentCartItem
+                                key={cart.product.id}
+                                handleAddToCart={handleAddToCart}
+                                carts={carts}
+                                product={cart.product}
+                                quantity={cart.quantity}
+                                removeCompletelyFromCart={removeCompletelyFromCart}
+                                removeOneFromCart={removeOneFromCart}
+                            />
+                        ))
                     )}
                 </div>
                 <div></div>

@@ -5,9 +5,11 @@ type CartType = {
     product: Product;
     quantity: number;
     handleAddToCart: (productID: number) => void;
+    removeOneFromCart: (productID: number) => void;
+    removeCompletelyFromCart: (productID: number) => void;
     carts : CartItem[]
 }
-export default function CurrentCartItem({ product, quantity, handleAddToCart,carts}: CartType) {
+export default function CurrentCartItem({ product, quantity, handleAddToCart,removeOneFromCart,removeCompletelyFromCart, carts}: CartType) {
             const currentQuantity = carts.find(
                     (item) => item.product.id === product.id
                 )?.quantity ?? 0;
@@ -36,6 +38,7 @@ export default function CurrentCartItem({ product, quantity, handleAddToCart,car
                 <div className="inline-flex items-center mt-3 border border-gray-200 rounded-md overflow-hidden">
                     <button
                         type="button"
+                        onClick = {() => removeOneFromCart(product.id)}
                         className="w-9 h-8 flex items-center justify-center text-slate-700 hover:bg-gray-50 transition-colors"
                         aria-label="Decrease quantity"
                     >
@@ -66,6 +69,7 @@ export default function CurrentCartItem({ product, quantity, handleAddToCart,car
                 <span className="text-[15px] font-bold text-slate-900">${quantity * product.price}</span>
                 <button
                     type="button"
+                    onClick={() => removeCompletelyFromCart(product.id)}
                     className="text-xs font-bold text-rose-700 hover:text-rose-800 mt-3 transition-colors">
                     Remove
                 </button>

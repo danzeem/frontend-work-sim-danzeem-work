@@ -6,6 +6,6 @@ import SuggestProductForm from "./components/SuggestProductForm";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <SuggestProductForm />
+    <App />
   </StrictMode>,
 );
