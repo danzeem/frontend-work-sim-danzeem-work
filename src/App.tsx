@@ -11,7 +11,8 @@ import type { CartItem } from "./types/cart";
 export type Theme = "dark" | "light";
 import CartPanel from "./components/CartPanel";
 import type { Product } from "./types/product";
-
+import ErrorState from "./components/Error";
+import ProductSkeleton from "./components/ProductSkeleton";
 type ProductsResponse = {
     products: Product[];
     total: number;
@@ -57,7 +58,9 @@ export default function App() {
         fetchProducts();
     }, []);
 
-
+    function handleRetry(){
+        window.location.reload()
+    }
     const normalizedSearch = search.trim().toLowerCase();
     const filteredProducts = products.filter((product) =>
         product.title.toLowerCase().includes(normalizedSearch)
@@ -110,8 +113,8 @@ export default function App() {
 
     }
 
-    return (
 
+    return (
         <div className={`${theme === "dark" ? "dark" : ""} min-h-screen flex flex-col`}>
             <Navbar theme={theme} favourites={favorites} isClose={close} onClose={setClose} onThemeChange={setTheme} carts={carts} />
             {close ? undefined : cPanel}
@@ -121,9 +124,9 @@ export default function App() {
             >
                 <SearchBar value={search} onSearchChange={setSearch} />
                 {loading ? (
-                    <p>Loading...</p>
+                    <ProductSkeleton />
                 ) : error ? (
-                    <p>Error: {error}</p>
+                    <ErrorState onRetry={handleRetry} />
                 ) : (
                     <>
                         <p className="mb-5 mt-3 text-sm text-[#627895] dark:text-slate-400" aria-live="polite">
