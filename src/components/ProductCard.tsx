@@ -1,5 +1,5 @@
 import type { Product } from "../types/product";
-
+import { Link } from "react-router-dom";
 type ProductCardProps = {
     product: Product;
     isFavorite: boolean;
@@ -33,7 +33,9 @@ export default function ProductCard({ product, isFavorite, isMaxInCart, handleAd
                 >
                     {isFavorite ? "♥" : "♡"}
                 </button>
-                <img className="h-full w-full object-contain" src={product.thumbnail} alt={product.title} loading="lazy" />
+                <Link to={`/products/${product.id}`}>
+                    <img className="h-full w-full object-contain" src={product.thumbnail} alt={product.title} loading="lazy" />
+                </Link>
             </div>
             <div className="flex min-h-[85px] flex-1 flex-col justify-between px-4 pb-4 pt-3">
                 <h3 className="text-base font-bold leading-snug text-[#17243b] dark:text-slate-100">

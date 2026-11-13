@@ -8,10 +8,13 @@ import CartPanel from "./components/CartPanel";
 import type { Product } from "./types/product";
 import PromoBanner from "./components/PromoBanner";
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import FavoritesPage from "./components/FavouritePage";
 import CartPage from "./components/CartPage";
 import HomePage from "./components/HomePage";
+import ProductDetailPage from "./components/ProductDetailPage";
+import NotFoundPage from "./components/NotFoundPage";
+import Layout from "./components/Layout";
 type ProductsResponse = {
     products: Product[];
     total: number;
@@ -95,8 +98,8 @@ export default function App() {
             }
         })
     }
-    const cPanel = (<CartPanel handleAddToCart={handleAddToCart} removeCompletelyFromCart={removeCompletelyFromCart}
-        removeOneFromCart={removeOneFromCart} carts={carts} isClose={close} onClose={setClose} itemCount={carts.length} />);
+    // const cPanel = (<CartPanel handleAddToCart={handleAddToCart} removeCompletelyFromCart={removeCompletelyFromCart}
+    //     removeOneFromCart={removeOneFromCart} carts={carts} isClose={close} onClose={setClose} itemCount={carts.length} />);
     function handleAddToCart(productID: number) {
         setCarts((cart) => {
             const currentCart = cart.find((item) => item.product.id === productID);
@@ -123,7 +126,7 @@ export default function App() {
             if (currentCart === undefined) {
                 return cart;
             } else {
-                if (currentCart.quantity < 1) {
+                if (currentCart.quantity <= 1) {
                     return cart.filter((item) => item.product.id !== productID);
                 }
             }
@@ -132,58 +135,68 @@ export default function App() {
 
     }
     const currentPromoBanner = <PromoBanner message={messages[index]} handleClear={closeBanner} />;
-
+    const currentLocation = useLocation();
     return (
         <div className={`${theme === "dark" ? "dark" : ""} min-h-screen flex flex-col`}>
-            <Navbar theme={theme} favourites={favorites} isClose={close} onClose={setClose} onThemeChange={setTheme} carts={carts} />
 
             <Routes>
-                <Route
-                    path="/"
-                    element={
-                        <HomePage
-                            products={products}
-                            search={search}
-                            onSearchChange={setSearch}
-                            carts={carts}
+                <Route element = {<Layout theme={theme} favourites={favorites} isClose={close} onClose={setClose} onThemeChange={setTheme} 
+                carts={carts} message={messages[index]} handleClear={closeBanner} isVisible={isVisible} />}>
+                    <Route
+                        path="/"
+                        element={
+                            <HomePage
+                                products={products}
+                                search={search}
+                                onSearchChange={setSearch}
+                                carts={carts}
+                                favorites={favorites}
+                                onAddToCart={handleAddToCart}
+                                onToggleFavorite={handleToggleFavourites}
+                                loading={loading}
+                                error={error}
+                                onRetry={handleRetry}
+                            />
+                        }
+                    />
+
+                    <Route
+                        path="/favorites"
+                        element={
+                            <FavoritesPage
+                                products={products}
+                                favorites={favorites}
+                                carts={carts}
+                                onAddToCart={handleAddToCart}
+                                onToggleFavorite={handleToggleFavourites}
+                            />
+                        }
+                    />
+                    <Route path="/products/:id" element={
+                        <ProductDetailPage products={products}
                             favorites={favorites}
-                            onAddToCart={handleAddToCart}
+                            handleAddToCart={handleAddToCart}
                             onToggleFavorite={handleToggleFavourites}
+                            carts={carts}
                             loading={loading}
-                            error={error}
-                            onRetry={handleRetry}
-                        />
-                    }
-                />
+                        />} />
 
-                <Route
-                    path="/favorites"
-                    element={
-                        <FavoritesPage
-                            products={products}
-                            favorites={favorites}
-                            carts={carts}
-                            onAddToCart={handleAddToCart}
-                            onToggleFavorite={handleToggleFavourites}
-                        />
-                    }
-                />
+                    <Route
+                        path="/cart"
+                        element={
+                            <CartPage
+                                carts={carts}
+                                onAddToCart={handleAddToCart}
+                                onRemoveOne={removeOneFromCart}
+                                onRemoveAll={removeCompletelyFromCart}
+                            />
+                        }
+                    />
+                    <Route path="*" element={<NotFoundPage pathname={currentLocation.pathname} />}></Route>
 
-                <Route
-                    path="/cart"
-                    element={
-                        <CartPage
-                            carts={carts}
-                            onAddToCart={handleAddToCart}
-                            onRemoveOne={removeOneFromCart}
-                            onRemoveAll={removeCompletelyFromCart}
-                        />
-                    }
-                />
+                </Route>
             </Routes>
-            {isVisible ? currentPromoBanner : undefined}
-            {close ? undefined : cPanel}
-            <Footer />
+
         </div>
     );
 }
