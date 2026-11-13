@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { Theme } from "../App";
 import type { CartItem } from "../types/cart";
 
@@ -16,7 +17,7 @@ export default function Navbar({ favourites, theme, onThemeChange, carts, onClos
     function toggleTheme() {
         onThemeChange(theme === "dark" ? "light" : "dark");
     }
-        function toClose(){
+    function toClose() {
         onClose(isClose ? false : true);
     }
 
@@ -35,34 +36,40 @@ export default function Navbar({ favourites, theme, onThemeChange, carts, onClos
                         SummitGear Market
                     </span>
                 </a>
-                <div className="flex shrink-0 items-center gap-3 text-sm text-[#263b59] dark:text-slate-200 sm:gap-8">
-                    <a className="hover:text-[#075c49] dark:hover:text-emerald-300" href="#shop">Shop</a>
-                    <a className="hover:text-[#075c49] dark:hover:text-emerald-300" href="#favorites">Favorites
-                        {favourites.length > 0 && (
-                            <span className="inline-flex items-center justify-center rounded-full bg-emerald-900 mx-2 px-2.5 py-0.5 text-xs font-bold text-white dark:bg-emerald-300 dark:text-slate-900">
-                                {favourites.length}
-                            </span>)}
-                    </a>
-                    <button
-                        type="button"
-                        onClick={toClose}
-                        className="hover:text-[#075c49] dark:hover:text-emerald-300 cursor-pointer">Cart
-                        {currentTotalCart > 0 && (
-                            <span className="inline-flex items-center justify-center rounded-full bg-emerald-900 mx-2 px-2.5 py-0.5 text-xs font-bold text-white dark:bg-emerald-300 dark:text-slate-900">
-                                {currentTotalCart}
-                            </span>)}
 
-                    </button>
+                <div className="flex shrink-0 items-center gap-3 text-sm text-[#263b59] dark:text-slate-200 sm:gap-8">
+
+                    <Link to="/" className="hover:text-emerald-700">
+                        Shop
+                    </Link>
+
+                    <Link to="/favorites" className="hover:text-emerald-700">
+                        Favorites
+                        {favourites.length > 0 && (
+                            <span className="ml-2 rounded-full bg-emerald-900 px-2 py-0.5 text-xs font-bold text-white">
+                                {favourites.length}
+                            </span>
+                        )}
+                    </Link>
+
+                    <Link to="/cart" className="hover:text-emerald-700">
+                        Cart
+                        {currentTotalCart > 0 && (
+                            <span className="ml-2 rounded-full bg-emerald-900 px-2 py-0.5 text-xs font-bold text-white">
+                                {currentTotalCart}
+                            </span>
+                        )}
+                    </Link>
+
                     <button
                         type="button"
                         onClick={toggleTheme}
-                        aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-                        aria-pressed={theme === "dark"}
-                        className="rounded-lg p-2 text-lg transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 dark:hover:bg-slate-700"
+                        className="rounded-lg border border-slate-200 p-2"
                     >
                         {theme === "dark" ? "☀️" : "🌙"}
                     </button>
                 </div>
+
             </nav>
         </header>
     );

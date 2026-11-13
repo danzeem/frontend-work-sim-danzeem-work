@@ -1,24 +1,29 @@
 import { useEffect, useState } from "react";
 import groupByCategory from "./utils/groupByCategory";
 import Navbar from "./components/Navbar";
-import SearchBar from "./components/SearchBar";
-import StatsBar from "./components/StatsBar";
-import ProductSection from "./components/ProductSection";
-import ProductGrid from "./components/ProductGrid";
-import EmptyState from "./components/EmptyState";
 import Footer from "./components/Footer";
 import type { CartItem } from "./types/cart";
 export type Theme = "dark" | "light";
 import CartPanel from "./components/CartPanel";
 import type { Product } from "./types/product";
-import ErrorState from "./components/Error";
-import ProductSkeleton from "./components/ProductSkeleton";
+import PromoBanner from "./components/PromoBanner";
+
+import { Routes, Route } from "react-router-dom";
+import FavoritesPage from "./components/FavouritePage";
+import CartPage from "./components/CartPage";
+import HomePage from "./components/HomePage";
 type ProductsResponse = {
     products: Product[];
     total: number;
     skip: number;
     limit: number;
 };
+const messages = [
+    "🚚 Free shipping on orders over $50",
+    "🎉 Get 10% off your first order",
+    "⭐ Discover our bestselling products"
+];
+
 
 export default function App() {
     // initialize state for products
@@ -32,7 +37,25 @@ export default function App() {
     const [favorites, setFavorites] = useState<number[]>([]);
     const [carts, setCarts] = useState<CartItem[]>([]);
     const [close, setClose] = useState<boolean>(true);
+    const [index, setIndex] = useState(0);
+    const [isVisible, setVisible] = useState(true);
 
+    const cartCount = carts.reduce(
+        (total, item) => total + item.quantity,
+        0
+    );
+
+    useEffect(() => {
+        document.title = cartCount === 0 ? `SummitGear Market` : `SummitGear Market (${carts.length})`;
+    }, [cartCount])
+    useEffect(() => {
+        if (!isVisible) return;
+        const intervalId = setInterval(() => {
+            setIndex((prev) => (prev + 1) % messages.length);
+        }, 4000);
+
+        return () => clearInterval(intervalId);
+    }, [])
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -57,16 +80,12 @@ export default function App() {
         };
         fetchProducts();
     }, []);
-
-    function handleRetry(){
+    function closeBanner() {
+        setVisible((prev) => false);
+    }
+    function handleRetry() {
         window.location.reload()
     }
-    const normalizedSearch = search.trim().toLowerCase();
-    const filteredProducts = products.filter((product) =>
-        product.title.toLowerCase().includes(normalizedSearch)
-    );
-    const isSearching = normalizedSearch !== "";
-    const groupedProducts = groupByCategory(filteredProducts);
     function handleToggleFavourites(productId: number) {
         setFavorites((prevIds) => {
             if (prevIds.includes(productId)) {
@@ -103,58 +122,67 @@ export default function App() {
             const currentCart = cart.find((item) => item.product.id === productID);
             if (currentCart === undefined) {
                 return cart;
-            }else{
-                if(currentCart.quantity < 1){
+            } else {
+                if (currentCart.quantity < 1) {
                     return cart.filter((item) => item.product.id !== productID);
-               }
+                }
             }
             return cart.map((item) => item.product.id === productID ? { ...item, quantity: item.quantity - 1 } : item);
         })
 
     }
-
+    const currentPromoBanner = <PromoBanner message={messages[index]} handleClear={closeBanner} />;
 
     return (
         <div className={`${theme === "dark" ? "dark" : ""} min-h-screen flex flex-col`}>
             <Navbar theme={theme} favourites={favorites} isClose={close} onClose={setClose} onThemeChange={setTheme} carts={carts} />
+
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <HomePage
+                            products={products}
+                            search={search}
+                            onSearchChange={setSearch}
+                            carts={carts}
+                            favorites={favorites}
+                            onAddToCart={handleAddToCart}
+                            onToggleFavorite={handleToggleFavourites}
+                            loading={loading}
+                            error={error}
+                            onRetry={handleRetry}
+                        />
+                    }
+                />
+
+                <Route
+                    path="/favorites"
+                    element={
+                        <FavoritesPage
+                            products={products}
+                            favorites={favorites}
+                            carts={carts}
+                            onAddToCart={handleAddToCart}
+                            onToggleFavorite={handleToggleFavourites}
+                        />
+                    }
+                />
+
+                <Route
+                    path="/cart"
+                    element={
+                        <CartPage
+                            carts={carts}
+                            onAddToCart={handleAddToCart}
+                            onRemoveOne={removeOneFromCart}
+                            onRemoveAll={removeCompletelyFromCart}
+                        />
+                    }
+                />
+            </Routes>
+            {isVisible ? currentPromoBanner : undefined}
             {close ? undefined : cPanel}
-            <main
-                id="shop"
-                className="flex-1 bg-[#f5f7fa] px-5 pb-8 pt-8 transition-colors dark:bg-slate-950 sm:px-9"
-            >
-                <SearchBar value={search} onSearchChange={setSearch} />
-                {loading ? (
-                    <ProductSkeleton />
-                ) : error ? (
-                    <ErrorState onRetry={handleRetry} />
-                ) : (
-                    <>
-                        <p className="mb-5 mt-3 text-sm text-[#627895] dark:text-slate-400" aria-live="polite">
-                            Showing {filteredProducts.length} of {products.length} products
-                        </p>
-                        {!isSearching && <StatsBar products={products} />}
-                        {filteredProducts.length === 0 ? (
-                            <EmptyState title="No products found" query={search} />
-                        ) : isSearching ? (
-                            <ProductGrid carts={carts} handleAddToCart={handleAddToCart} favourites={favorites} onToggleFavorite={handleToggleFavourites} products={filteredProducts} />
-                        ) : (
-                            <div className="space-y-10">
-                                {Object.entries(groupedProducts).map(([category, categoryProducts]) => (
-                                    <ProductSection
-                                        handleAddToCart={handleAddToCart}
-                                        carts={carts}
-                                        favourites={favorites}
-                                        onToggleFavorite={handleToggleFavourites}
-                                        key={category}
-                                        title={`${category} (${categoryProducts.length})`}
-                                        products={categoryProducts}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </>
-                )}
-            </main>
             <Footer />
         </div>
     );
